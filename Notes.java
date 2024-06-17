@@ -54,6 +54,14 @@ public class Notes extends JFrame {
         controlPanel.add(new JLabel("Text Align:"));
         controlPanel.add(textAlignComboBox);
 
+        saveButton = new JButton("Save");
+        saveButton.addActionListener(new SaveAction());
+        controlPanel.add(saveButton);
+
+        loadButton = new JButton("Load");
+        loadButton.addActionListener(new LoadAction());
+        controlPanel.add(loadButton);
+
         panel.add(controlPanel, BorderLayout.NORTH);
         add(panel);
 
@@ -114,6 +122,38 @@ public class Notes extends JFrame {
             SimpleAttributeSet attributeSet = new SimpleAttributeSet();
             StyleConstants.setAlignment(attributeSet, alignment);
             doc.setParagraphAttributes(0, doc.getLength(), attributeSet, false);
+        }
+    }
+
+    private class SaveAction implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JFileChooser fileChooser = new JFileChooser();
+            int option = fileChooser.showSaveDialog(Notes.this);
+            if (option == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                    writer.write(textPane.getText());
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private class LoadAction implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JFileChooser fileChooser = new JFileChooser();
+            int option = fileChooser.showOpenDialog(Notes.this);
+            if (option == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                    textPane.read(reader, null);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
     }
 
